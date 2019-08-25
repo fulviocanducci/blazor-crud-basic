@@ -1,14 +1,14 @@
 ﻿@page "/todo/{id:int}"
 @inject HttpClient Client
-@using System.Text.Json
-@using System.Text
 @inject IUriHelper urihelper
+@using WebAppBlazorWithNode.Extensions;
 
 @if (Todo.Id != 0)
 {
-<input type="text" name="description" @bind="@Todo.Description" />
-<input type="text" name="done" @bind="@Todo.Done" /> @Todo.Done
-<button @onclick="Save">Salvar</button>
+    <input type="text" name="description" @bind="@Todo.Description" />
+    <input type="text" name="done" @bind="@Todo.Done" />
+    @Todo.Done
+    <button @onclick="Save">Salvar</button>
 }
 else
 {
@@ -16,23 +16,17 @@ else
 }
 
 @code {
+
     [Parameter] public int id { get; set; }
     public Todo Todo { get; set; } = new Todo();
 
     public async Task Save()
     {
-        StringContent stringContent =
-                new StringContent(
-                    JsonSerializer.Serialize(Todo),
-                    Encoding.UTF8,
-                    "application/json");
-        await Client.PutAsync($"http://localhost:3000/todo/{Todo.Id}", stringContent);
+        await Client.PutAsync($"http://localhost:3000/todo/{Todo.Id}", Todo.GetStringContent());
         urihelper.NavigateTo("/todos");
     }
     protected override async Task OnParametersSetAsync()
-    {
-        string json = await Client.GetStringAsync($"http://localhost:3000/todo/{id}");
-        Console.WriteLine(json);
-        Todo = System.Text.Json.JsonSerializer.Deserialize<Todo>(json);
+    {   
+        Todo = await Client.GetAsync<Todo>($"http://localhost:3000/todo/{id}");
     }
 }

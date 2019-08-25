@@ -2,8 +2,7 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using System.Text.Json;
-using System.Text;
+using WebAppBlazorWithNode.Extensions;
 
 namespace WebAppBlazorWithNode.Pages
 {
@@ -19,8 +18,7 @@ namespace WebAppBlazorWithNode.Pages
 
         async Task LoadTodosAsync()
         {
-            string json = await Client.GetStringAsync("http://localhost:3000/todos");
-            Todos = JsonSerializer.Deserialize<Todo[]>(json);
+            Todos = await Client.GetAsync<Todo[]>("http://localhost:3000/todos");
         }
 
         public async Task ChangeDoneAsync(Todo todo)
@@ -28,13 +26,8 @@ namespace WebAppBlazorWithNode.Pages
             if (todo.Done == 0)
             {
                 todo.Done = 1;
-            }
-            StringContent stringContent = 
-                new StringContent(
-                    JsonSerializer.Serialize(todo), 
-                    Encoding.UTF8, 
-                    "application/json");
-            await Client.PutAsync($"http://localhost:3000/todo/{todo.Id}", stringContent);
+            }            
+            await Client.PutAsync($"http://localhost:3000/todo/{todo.Id}", todo.GetStringContent());
             await LoadTodosAsync();
         }
 
