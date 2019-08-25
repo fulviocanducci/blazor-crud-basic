@@ -1,0 +1,46 @@
+﻿@page "/todos"
+@inherits TodosComponent
+@inject IUriHelper urihelper;
+
+<h1>Todo - NodeJs - SQLite3</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (Todos == null)
+{
+    <p>Carregando ...</p>
+}
+else
+{
+    <div>
+        <button @onclick="@(e => urihelper.NavigateTo("/todo/create"))" class="btn btn-outline-primary">Novo</button>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="text-center">Descrição</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">...</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var todo in Todos)
+            {
+                <tr>
+                    <td class="text-left">@todo.Description</td>
+                    <td class="text-center">
+                        @todo.Done
+                    </td>
+                    <td class="text-center">
+                        <button @onclick="@(e => urihelper.NavigateTo($"/todo/{todo.Id}"))" class="btn btn-outline-secondary">Alterar</button>
+                        <button @onclick="@(e => ChangeDoneAsync(todo))"
+                                disabled="@(todo.Done == 1)" class="@(todo.Done == 1? "btn btn-danger":"btn btn-info")">
+                            @(todo.Done == 1 ? "Done" : "Wait")
+                        </button>
+                        <button @onclick="@(e => DeleteDoneAsync(todo))" class="btn btn-outline-danger">Excluir</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
