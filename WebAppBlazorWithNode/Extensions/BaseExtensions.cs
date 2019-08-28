@@ -17,5 +17,11 @@ namespace WebAppBlazorWithNode.Extensions
             string json = await client.GetStringAsync(url);            
             return JsonSerializer.Deserialize<T>(json);
         }
+
+        public static async Task<T> PostAsync<T>(this HttpClient client, string url, HttpContent content)
+        {
+            HttpResponseMessage json = await client.PostAsync(url, content);
+            return JsonSerializer.Deserialize<T>(await json.Content.ReadAsStringAsync());
+        }
     }
 }

@@ -2,6 +2,7 @@
 @inject HttpClient Client
 @inject IUriHelper urihelper
 @using WebAppBlazorWithNode.Extensions;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <input type="text" name="description" @bind="@Todo.Description" />
 <input type="text" name="done" @bind="@Todo.Done" /> @Todo.Done

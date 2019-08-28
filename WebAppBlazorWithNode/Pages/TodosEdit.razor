@@ -2,6 +2,7 @@
 @inject HttpClient Client
 @inject IUriHelper urihelper
 @using WebAppBlazorWithNode.Extensions;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 @if (Todo.Id != 0)
 {
@@ -26,7 +27,7 @@ else
         urihelper.NavigateTo("/todos");
     }
     protected override async Task OnParametersSetAsync()
-    {   
+    {
         Todo = await Client.GetAsync<Todo>($"http://localhost:3000/todo/{id}");
     }
 }

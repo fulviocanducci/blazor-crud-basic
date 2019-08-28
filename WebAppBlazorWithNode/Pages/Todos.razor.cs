@@ -3,21 +3,26 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using WebAppBlazorWithNode.Extensions;
+using WebAppBlazorWithNode.Models;
 
 namespace WebAppBlazorWithNode.Pages
 {
     public class TodosComponent : ComponentBase
     {
+        
         [Inject]
         HttpClient Client { get; set; }
+
         protected Todo[] Todos { get; set; }
+
+        protected StatusLogin StatusLogin { get; set; }
         protected override async Task OnInitializedAsync()
-        {
+        {           
             await LoadTodosAsync();
         }
 
         async Task LoadTodosAsync()
-        {
+        {            
             Todos = await Client.GetAsync<Todo[]>("http://localhost:3000/todos");
         }
 

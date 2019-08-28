@@ -1,0 +1,68 @@
+﻿@page  "/login"
+@using WebAppBlazorWithNode.Models
+@inject HttpClient Client
+@using WebAppBlazorWithNode.Extensions
+@inject IUriHelper urihelper
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+@if (StatusLogin == null)
+{
+    <EditForm Model="@LoginViewModel" OnValidSubmit="@LogInto">
+        <div>
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <InputText @bind-Value="@LoginViewModel.Email" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Password</label>
+            <InputText @bind-Value="@LoginViewModel.Password" class="form-control" type="password" />
+        </div>
+        <button class="btn btn-outline-primary">Entrar</button>
+    </EditForm>
+    <div>@MessageError</div>
+} else
+{
+    <div>Successfully logged in</div>
+    <button @onclick="@Logoff">Logoff</button>
+}
+@code {
+    LoginViewModel LoginViewModel = new LoginViewModel();
+    string MessageError = null;
+    StatusLogin StatusLogin { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        StatusLogin = await localStorage.GetItemAsync<StatusLogin>("storage_login");
+        Console.WriteLine("Status");
+        StateHasChanged();
+    }
+
+    async Task Logoff()
+    {
+        await localStorage.RemoveItemAsync("storage_login");
+        Client.DefaultRequestHeaders.Authorization = null;
+        StatusLogin = null;
+        MessageError = null;
+        StateHasChanged();
+    }
+
+    async Task LogInto()
+    {
+        MessageError = null;
+        StatusLogin statusLogin = await Client.PostAsync<StatusLogin>("http://localhost:3000/login", LoginViewModel.GetStringContent());
+        if (statusLogin.Status == 200)
+        {
+            await localStorage.SetItemAsync("storage_login", statusLogin);
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", statusLogin.Token);
+            urihelper.NavigateTo("/");
+        }
+        else if (statusLogin.Status == 404)
+        {
+            MessageError = statusLogin.Description;
+        }
+    }
+}
+

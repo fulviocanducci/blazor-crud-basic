@@ -1,7 +1,7 @@
 ﻿@page "/todos"
 @inherits TodosComponent
 @inject IUriHelper urihelper;
-
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 <h1>Todo - NodeJs - SQLite3</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
